@@ -1,0 +1,18 @@
+.flex-class {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.flex-class button {
+  display: block;
+}
+
+.correct {
+  background: green;
+}
+
+.incorrect {
+  background: red;
+}
