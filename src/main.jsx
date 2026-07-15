@@ -1,10 +1,21 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router";
+import { Router } from "./Router";
 
-createRoot(document.getElementById('root')).render(
+import {
+  StyledEngineProvider,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material/styles";
+
+// 2. И в самом конце импортируем стили Tailwind!
+import "./index.css";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    <StyledEngineProvider injectFirst>
+      <RouterProvider router={Router} />
+    </StyledEngineProvider>
   </StrictMode>,
-)
+);

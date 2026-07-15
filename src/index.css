@@ -1,8 +1,8 @@
+@import "tailwindcss" important;
+
 .flex-class {
   display: flex;
-  align-items: center;
   gap: 10px;
-  margin-bottom: 30px;
 }
 
 .flex-class button {
@@ -15,4 +15,12 @@
 
 .incorrect {
   background: red;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 600;
 }
