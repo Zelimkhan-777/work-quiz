@@ -1,35 +1,23 @@
-import { useEffect, useState, useMemo } from "react";
 import { Button, Card, Typography, LinearProgress } from "@mui/material";
-import { useParams } from "react-router";
-import { Data } from "./data";
+import { buttonStyles } from "./utils";
+import { useQuiz } from "./QuizContext";
 
 function QuizGame() {
-  const { id } = useParams();
+  const {
+    count,
+    setCount,
+    choiseOption,
+    setChoiseOption,
+    filteredQuizArray,
+    score,
+    setScore,
+    id,
+    quizData,
+    nextQuestion,
+    handleClick,
+    progressPercent,
+  } = useQuiz();
 
-  useEffect(() => {
-    console.log(id);
-  }, [id]);
-
-  const [count, setCount] = useState(0);
-  const [score, setScore] = useState(0);
-  const [correct, setCorrect] = useState(false);
-
-  const [choiseOption, setChoiseOption] = useState(null);
-
-  const filteredQuizArray = Data.filter((data) => data.category === id);
-
-  const quizData = useMemo(() => {
-    const filtered = Data.filter((data) => data.category === id);
-
-    const shuffled = [...filtered];
-
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    return shuffled.slice(0, 10);
-  }, [id]);
   if (count >= quizData.length) {
     return (
       <p>
@@ -40,23 +28,6 @@ function QuizGame() {
 
   const { question, options, explanation, correctAnswerIndex } =
     quizData[count];
-
-  function nextQuestion() {
-    setCount((prev) => prev + 1);
-    setChoiseOption(null);
-  }
-
-  function handleClick(index) {
-    if (choiseOption === null) {
-      setChoiseOption(index);
-    }
-
-    if (index === correctAnswerIndex) {
-      setScore((prev) => prev + 1);
-    }
-  }
-
-  const progressPercent = (count / quizData.length) * 100;
 
   return (
     <div className="flex pt-20 px-5 justify-center h-screen bg-zinc-800">
@@ -95,42 +66,7 @@ function QuizGame() {
 
             return (
               <Button
-                sx={{
-                  color: "#fff",
-
-                  bgcolor:
-                    choiseOption !== null
-                      ? index === correctAnswerIndex
-                        ? "#16a34a"
-                        : choiseOption === index
-                          ? "#dc2626"
-                          : "#9333ea"
-                      : "#9333ea",
-
-                  "&:hover": {
-                    bgcolor:
-                      choiseOption !== null
-                        ? index === correctAnswerIndex
-                          ? "#16a34a"
-                          : choiseOption === index
-                            ? "#dc2626"
-                            : "#a855f7"
-                        : "#a855f7",
-                  },
-
-                  boxShadow:
-                    choiseOption !== null
-                      ? index === correctAnswerIndex
-                        ? "0 0 20px rgba(34,197,94,.5)"
-                        : choiseOption === index
-                          ? "0 0 20px rgba(239,68,68,.5)"
-                          : "0 0 20px rgba(147,51,234,.3)"
-                      : "0 0 20px rgba(147,51,234,.3)",
-
-                  transition: ".3s",
-                  p: 0,
-                  m: 0,
-                }}
+                sx={buttonStyles(choiseOption, index, correctAnswerIndex)}
                 key={index}
                 disabled={choiseOption !== null}
                 onClick={() => handleClick(index)}

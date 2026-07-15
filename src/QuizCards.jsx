@@ -1,17 +1,10 @@
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  Button,
-  Typography,
-} from "@mui/material";
-
 import HTML from "../icons/html5.svg";
 import CSS from "../icons/css.svg";
 import JS from "../icons/javascript.svg";
 import React from "../icons/jsreact.svg";
-import { Link } from "react-router";
+
+import CategoryCard from "./CategoryCard";
+import { Typography } from "@mui/material";
 
 const QuizCards = () => {
   const arrStack = [
@@ -29,34 +22,14 @@ const QuizCards = () => {
         </Typography>
 
         <div className="grid grid-cols-2  gap-4  ">
-          {arrStack.map((element) => {
+          {arrStack.map(({ id, technology, color, icon }) => {
             return (
-              <Card
-                key={element.id}
-                className="bg-zinc-900 hover:bg-zinc-700 rounded-2xl"
-              >
-                <CardContent>
-                  <Box className="flex items-center gap-4">
-                    <div>
-                      <img
-                        style={{ backgroundColor: element.color }}
-                        src={element.icon}
-                        className={`w-15 h-15 rounded-[10px]`}
-                        alt={element.technology}
-                      />
-                    </div>
-                    <p className="text-[1.5rem] text-white">
-                      {element.technology}
-                    </p>
-                  </Box>
-                </CardContent>
-
-                <CardActions>
-                  <Button className="capitalize text-white hover:text-purple-600">
-                    <Link to={`/card/${element.technology}`}>Начать</Link>
-                  </Button>
-                </CardActions>
-              </Card>
+              <CategoryCard
+                key={id}
+                technology={technology}
+                color={color}
+                icon={icon}
+              />
             );
           })}
         </div>
