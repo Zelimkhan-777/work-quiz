@@ -1,8 +1,18 @@
 import { Button, Card, Typography, LinearProgress } from "@mui/material";
 import { buttonStyles } from "./utils";
 import { useQuiz } from "./QuizContext";
+import { useParams, useNavigate, useBlocker } from "react-router";
+import { arrStack } from "./data";
 
 function QuizGame() {
+  const { id } = useParams();
+
+  const currentCard = arrStack.find((item) => item.technology === id);
+
+  if (!currentCard) {
+    return <NotFound />;
+  }
+
   const {
     count,
     setCount,
@@ -11,7 +21,6 @@ function QuizGame() {
     filteredQuizArray,
     score,
     setScore,
-    id,
     quizData,
     nextQuestion,
     handleClick,
@@ -69,7 +78,7 @@ function QuizGame() {
                 sx={buttonStyles(choiseOption, index, correctAnswerIndex)}
                 key={index}
                 disabled={choiseOption !== null}
-                onClick={() => handleClick(index)}
+                onClick={() => handleClick(index, correctAnswerIndex)}
                 className="text-[0.8rem] max-w-50 px-5 py-2 wrap-break-word text-center  normal-case"
               >
                 {option}

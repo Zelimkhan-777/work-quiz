@@ -2,15 +2,17 @@ import { createBrowserRouter } from "react-router";
 import Content from "./Content";
 import QuizGame from "./QuizGame";
 import Layout from "./Layout";
+import NotFound from "./NotFound";
 
 export const Router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    /*   errorElement: <NotFound />, */
+    errorElement: <NotFound />,
     children: [
       { index: true, element: <Content /> },
       { path: "card/:id", element: <QuizGame /> },
+      { path: "**", element: <NotFound /> },
     ],
   },
 ]);
