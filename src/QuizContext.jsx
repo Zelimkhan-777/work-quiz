@@ -5,7 +5,6 @@ import { useQuestions } from "./hooks/useQuestions";
 const QuizContext = createContext({});
 
 export const QuizProvider = ({ children }) => {
-  const { id } = useParams();
   const [active, setActive] = useState(false);
   const [count, setCount] = useState(0);
   const [score, setScore] = useState(0);
@@ -13,9 +12,24 @@ export const QuizProvider = ({ children }) => {
 
   const [choiseOption, setChoiseOption] = useState(null);
 
-  const { nextQuestion, handleClick, quizData } = useQuestions();
+  const { quizData } = useQuestions();
 
   const progressPercent = (count / quizData.length) * 100;
+
+  function nextQuestion() {
+    setCount((prev) => prev + 1);
+    setChoiseOption(null);
+  }
+
+  function handleClick(index, correctAnswerIndex) {
+    if (choiseOption === null) {
+      setChoiseOption(index);
+    }
+
+    if (index === correctAnswerIndex) {
+      setScore((prev) => prev + 1);
+    }
+  }
 
   return (
     <QuizContext.Provider
@@ -26,7 +40,6 @@ export const QuizProvider = ({ children }) => {
         setChoiseOption,
         score,
         setScore,
-        id,
         quizData,
         nextQuestion,
         handleClick,

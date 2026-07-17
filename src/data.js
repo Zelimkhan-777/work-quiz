@@ -1,3 +1,8 @@
+import HTML from "../icons/html5.svg";
+import CSS from "../icons/css.svg";
+import JS from "../icons/javascript.svg";
+import React from "../icons/jsreact.svg";
+
 export const Data = [
   {
     id: 1,
@@ -1331,4 +1336,11 @@ export const Data = [
     explanation:
       "Компоненты позволяют создавать переиспользуемые части интерфейса.",
   },
+];
+
+export const arrStack = [
+  { id: 1, technology: "HTML", color: "#E34F26", icon: HTML },
+  { id: 2, technology: "CSS", color: "#663399", icon: CSS },
+  { id: 3, technology: "JavaScript", color: "#F7DF1E", icon: JS },
+  { id: 4, technology: "React", color: "#61DAFB", icon: React },
 ];
