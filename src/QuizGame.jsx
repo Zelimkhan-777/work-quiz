@@ -1,39 +1,39 @@
 import { useState } from "react";
 import {
+  Box,
   Button,
   Card,
-  Typography,
   LinearProgress,
   Modal,
-  Box,
+  Typography,
 } from "@mui/material";
-import { buttonStyles } from "./utils";
-import { useQuiz } from "./QuizContext";
-import { useParams, useNavigate, useBlocker } from "react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { useParams } from "react-router";
 import { arrStack } from "./data";
-import { Link } from "react-router";
+import { useBlockBackButton } from "./hooks/useBlockBackButton";
+import {
+  motionDurations,
+  motionEase,
+  staggerContainer,
+  staggerItem,
+} from "./motion";
+import NotFound from "./NotFound";
+import { useQuiz } from "./QuizContext";
+import QuizResult from "./QuizResult";
+import { buttonStyles } from "./utils";
 
 function QuizGame() {
   const { id } = useParams();
-
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const leaveGame = useBlockBackButton("/");
 
   const currentCard = arrStack.find((item) => item.technology === id);
 
-  if (!currentCard) {
-    return <NotFound />;
-  }
-
   const {
     count,
-    setCount,
     choiseOption,
-    setChoiseOption,
-    filteredQuizArray,
     score,
-    setScore,
+    setActive,
     resetStatistic,
     quizData,
     nextQuestion,
@@ -41,11 +41,23 @@ function QuizGame() {
     progressPercent,
   } = useQuiz();
 
+  if (!currentCard) {
+    return <NotFound />;
+  }
+
   if (count >= quizData.length) {
     return (
-      <p>
-        Вы ответили на {score} из {quizData.length} вопросов
-      </p>
+      <QuizResult
+        score={score}
+        total={quizData.length}
+        technology={currentCard.technology}
+        onRestart={resetStatistic}
+        onBackToThemes={() => {
+          resetStatistic();
+          setActive(true);
+          leaveGame();
+        }}
+      />
     );
   }
 
@@ -53,114 +65,490 @@ function QuizGame() {
     quizData[count];
 
   return (
-    <div className="flex pt-20 px-5 justify-center h-screen bg-zinc-800">
-      <Card className="w-140 min-h-74 max-h-105 pt-3 px-8 pb-8 rounded-[10px] flex flex-col items-center justify-between gap-4 bg-zinc-700 text-white ">
-        <Typography className="text-center " variant="h6" body="2">
-          Вопрос {count + 1}
-        </Typography>
-        <LinearProgress
-          variant="determinate"
-          value={progressPercent}
-          sx={{
-            width: "80%",
-            height: 3,
-            borderRadius: 4,
-            backgroundColor: "#14532d", // фон полоски
+    <section className="flex min-h-full w-full flex-1 items-start justify-center">
+      <motion.div
+        className="flex w-full max-w-5xl justify-center py-2 sm:py-4"
+        initial={{
+          opacity: 0,
+          y: 18,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: motionDurations.normal,
+          ease: motionEase,
+        }}
+      >
+        <Card className="flex w-full max-w-4xl flex-col gap-5 rounded-[20px] bg-zinc-700 px-4 py-5 text-white shadow-[0_20px_70px_rgba(0,0,0,0.28)] sm:px-6 sm:py-6 md:px-8">
+          <motion.div layout className="flex flex-col gap-2">
+            <Typography
+              className="text-center text-white"
+              sx={{
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.1rem",
+                  md: "1.2rem",
+                },
+                fontWeight: 600,
+              }}
+            >
+              Вопрос {count + 1}
+            </Typography>
 
-            "& .MuiLinearProgress-bar": {
-              backgroundColor: "#22c55e", // сама заполненная часть
-              borderRadius: 5,
-            },
-          }}
-        />
-        <p className="text-center">{question}</p>
-        <div className="grid grid-cols-2 gap-4">
-          {options.map((option, index) => {
-            let classname = ``;
+            <LinearProgress
+              variant="determinate"
+              value={progressPercent}
+              sx={{
+                width: "100%",
+                maxWidth: {
+                  xs: "100%",
+                  sm: 520,
+                },
+                alignSelf: "center",
+                height: {
+                  xs: 6,
+                  sm: 7,
+                },
+                borderRadius: 999,
+                backgroundColor: "#14532d",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "#22c55e",
+                  borderRadius: 999,
+                  transition: "transform 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                },
+              }}
+            />
+          </motion.div>
 
-            if (choiseOption !== null) {
-              if (index === correctAnswerIndex) {
-                classname =
-                  "bg-green-600! hover:bg-green-600! shadow-[0_0_20px_rgba(34,197,94,0.5)]";
-              } else if (choiseOption === index) {
-                classname = `bg-red-600! !hover:bg-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)]`;
-              }
-            }
-
-            return (
-              <Button
-                sx={buttonStyles(choiseOption, index, correctAnswerIndex)}
-                key={index}
-                disabled={choiseOption !== null}
-                onClick={() => handleClick(index, correctAnswerIndex)}
-                className="text-[0.8rem] max-w-50 px-5 py-2 wrap-break-word text-center  normal-case"
-              >
-                {option}
-              </Button>
-            );
-          })}
-        </div>
-
-        <p className="text-[0.8rem] text-center">
-          {choiseOption !== null && explanation}
-        </p>
-
-        <div className="flex gap-4">
-          <Button
-            className={`text-white normal-case mb-4 ${choiseOption !== null && `bg-purple-600`}`}
-            disabled={choiseOption === null ? true : false}
-            onClick={nextQuestion}
-          >
-            Далее
-          </Button>
-
-          <Button
-            className="text-white normal-case mb-4 bg-purple-600"
-            onClick={handleOpen}
-          >
-            Завершить игру
-          </Button>
-
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-100 bg-zinc-800 border border-zinc-700/60 rounded-[10px] p-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={count}
+              layout
+              initial={{
+                opacity: 0,
+                y: 18,
+                scale: 0.992,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                y: -12,
+                scale: 0.995,
+              }}
+              transition={{
+                duration: motionDurations.normal,
+                ease: motionEase,
+              }}
+              className="flex flex-col gap-5"
+            >
               <Typography
-                id="modal-modal-title"
-                className="text-center"
-                variant="h6"
-                component="h2"
-                className="text-white text-center"
+                className="mx-auto flex w-full max-w-3xl items-center justify-center break-words text-center text-white"
+                sx={{
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.1rem",
+                    md: "1.2rem",
+                  },
+                  lineHeight: 1.55,
+                  minHeight: {
+                    xs: "4.8rem",
+                    sm: "5.4rem",
+                  },
+                  px: {
+                    xs: 0.5,
+                    sm: 1,
+                  },
+                }}
               >
-                Вы точно хотите закончить игру?
+                {question}
               </Typography>
 
-              <Box className="flex justify-center gap-8 mt-8">
-                <Link to="/">
-                  {" "}
-                  <Button
-                    className="bg-purple-600 text-white normal-case"
-                    onClick={resetStatistic}
-                  >
-                    Да
-                  </Button>
-                </Link>
+              <motion.div
+                className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2"
+                variants={staggerContainer}
+                initial="initial"
+                animate="animate"
+              >
+                {options.map((option, index) => {
+                  const isSelected = choiseOption === index;
+                  const isCorrect = index === correctAnswerIndex;
 
-                <Button
-                  className="bg-purple-600 text-white normal-case"
-                  onClick={handleClose}
+                  return (
+                    <motion.div
+                      key={`${count}-${index}`}
+                      variants={staggerItem}
+                      animate={
+                        choiseOption !== null
+                          ? {
+                              scale: isSelected || isCorrect ? 1.015 : 1,
+                              y: isSelected || isCorrect ? -2 : 0,
+                            }
+                          : {
+                              scale: 1,
+                              y: 0,
+                            }
+                      }
+                      whileHover={
+                        choiseOption === null
+                          ? {
+                              y: -2,
+                              scale: 1.01,
+                            }
+                          : undefined
+                      }
+                      whileTap={
+                        choiseOption === null
+                          ? {
+                              scale: 0.986,
+                            }
+                          : undefined
+                      }
+                      transition={{
+                        duration: motionDurations.fast,
+                        ease: motionEase,
+                      }}
+                    >
+                      <Button
+                        sx={{
+                          ...buttonStyles(
+                            choiseOption,
+                            index,
+                            correctAnswerIndex,
+                          ),
+                          width: "100%",
+                          minHeight: {
+                            xs: 52,
+                            sm: 58,
+                          },
+                          borderRadius: "16px",
+                          px: {
+                            xs: 2,
+                            sm: 2.5,
+                          },
+                          py: {
+                            xs: 1.25,
+                            sm: 1.5,
+                          },
+                          fontSize: {
+                            xs: "0.92rem",
+                            sm: "0.98rem",
+                          },
+                          lineHeight: 1.45,
+                          textAlign: "center",
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                        }}
+                        disabled={choiseOption !== null}
+                        onClick={() => handleClick(index, correctAnswerIndex)}
+                        className="normal-case"
+                      >
+                        {option}
+                      </Button>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={
+                    choiseOption !== null
+                      ? `explanation-${count}`
+                      : `placeholder-${count}`
+                  }
+                  layout
+                  initial={{
+                    opacity: 0,
+                    y: 8,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -6,
+                  }}
+                  transition={{
+                    duration: motionDurations.fast,
+                    ease: motionEase,
+                  }}
                 >
-                  Нет
-                </Button>
-              </Box>
-            </Box>
-          </Modal>
-        </div>
-      </Card>
-    </div>
+                  <Typography
+                    className="mx-auto w-full max-w-3xl break-words text-center text-zinc-200"
+                    sx={{
+                      minHeight: {
+                        xs: "4.5rem",
+                        sm: "5rem",
+                      },
+                      fontSize: {
+                        xs: "0.88rem",
+                        sm: "0.95rem",
+                      },
+                      lineHeight: 1.5,
+                      px: {
+                        xs: 0.5,
+                        sm: 1,
+                      },
+                    }}
+                  >
+                    {choiseOption !== null ? explanation : " "}
+                  </Typography>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+
+          <motion.div
+            layout
+            className="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center"
+            initial={{
+              opacity: 0,
+              y: 10,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              delay: 0.06,
+              duration: motionDurations.normal,
+              ease: motionEase,
+            }}
+          >
+            <motion.div
+              whileHover={
+                choiseOption !== null
+                  ? {
+                      y: -2,
+                      scale: 1.01,
+                    }
+                  : undefined
+              }
+              whileTap={
+                choiseOption !== null
+                  ? {
+                      scale: 0.986,
+                    }
+                  : undefined
+              }
+              transition={{
+                duration: motionDurations.fast,
+                ease: motionEase,
+              }}
+              className="w-full sm:w-auto"
+            >
+              <Button
+                className={`w-full rounded-xl text-white normal-case transition-all duration-300 sm:w-auto ${choiseOption !== null ? "bg-purple-600" : ""}`}
+                sx={{
+                  minHeight: 46,
+                  px: {
+                    xs: 3,
+                    sm: 4,
+                  },
+                }}
+                disabled={choiseOption === null}
+                onClick={nextQuestion}
+              >
+                Далее
+              </Button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{
+                y: -2,
+                scale: 1.01,
+              }}
+              whileTap={{
+                scale: 0.986,
+              }}
+              transition={{
+                duration: motionDurations.fast,
+                ease: motionEase,
+              }}
+              className="w-full sm:w-auto"
+            >
+              <Button
+                className="w-full rounded-xl bg-purple-600 text-white normal-case transition-all duration-300 hover:bg-purple-500 sm:w-auto"
+                sx={{
+                  minHeight: 46,
+                  px: {
+                    xs: 3,
+                    sm: 4,
+                  },
+                }}
+                onClick={() => setOpen(true)}
+              >
+                Завершить игру
+              </Button>
+            </motion.div>
+
+            <Modal
+              open={open}
+              onClose={() => setOpen(false)}
+              aria-labelledby="finish-game-title"
+            >
+              <AnimatePresence>
+                {open ? (
+                  <motion.div
+                    className="fixed inset-0 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      duration: motionDurations.fast,
+                      ease: motionEase,
+                    }}
+                  >
+                    <Box
+                      component={motion.div}
+                      className="w-full rounded-[18px] border border-zinc-700/60 bg-zinc-800 text-white shadow-[0_18px_60px_rgba(0,0,0,0.4)]"
+                      initial={{
+                        opacity: 0,
+                        y: 18,
+                        scale: 0.985,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        y: 10,
+                        scale: 0.99,
+                      }}
+                      transition={{
+                        duration: motionDurations.normal,
+                        ease: motionEase,
+                      }}
+                      sx={{
+                        maxWidth: {
+                          xs: "calc(100% - 32px)",
+                          sm: 440,
+                        },
+                        p: {
+                          xs: 2.5,
+                          sm: 3,
+                        },
+                      }}
+                    >
+                      <Typography
+                        id="finish-game-title"
+                        variant="h6"
+                        component="h2"
+                        className="text-center text-white"
+                        sx={{
+                          fontSize: {
+                            xs: "1rem",
+                            sm: "1.15rem",
+                          },
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        Вы точно хотите закончить игру?
+                      </Typography>
+
+                      <Box className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
+                        <motion.div
+                          whileHover={{
+                            y: -2,
+                            scale: 1.01,
+                          }}
+                          whileTap={{
+                            scale: 0.986,
+                          }}
+                          transition={{
+                            duration: motionDurations.fast,
+                            ease: motionEase,
+                          }}
+                          className="flex justify-center"
+                        >
+                          <Button
+                            className="rounded-xl bg-purple-600 text-white normal-case hover:bg-purple-500"
+                            sx={{
+                              minHeight: {
+                                xs: 38,
+                                sm: 40,
+                              },
+                              minWidth: {
+                                xs: 88,
+                                sm: 96,
+                              },
+                              px: {
+                                xs: 3,
+                                sm: 3,
+                              },
+                              fontSize: {
+                                xs: "0.84rem",
+                                sm: "0.88rem",
+                              },
+                            }}
+                            onClick={() => {
+                              resetStatistic();
+                              setActive(true);
+                              leaveGame();
+                            }}
+                          >
+                            Да
+                          </Button>
+                        </motion.div>
+
+                        <motion.div
+                          whileHover={{
+                            y: -2,
+                            scale: 1.01,
+                          }}
+                          whileTap={{
+                            scale: 0.986,
+                          }}
+                          transition={{
+                            duration: motionDurations.fast,
+                            ease: motionEase,
+                          }}
+                          className="flex justify-center"
+                        >
+                          <Button
+                            className="rounded-xl bg-purple-600 text-white normal-case hover:bg-purple-500"
+                            sx={{
+                              minHeight: {
+                                xs: 38,
+                                sm: 40,
+                              },
+                              minWidth: {
+                                xs: 88,
+                                sm: 96,
+                              },
+                              px: {
+                                xs: 3,
+                                sm: 3,
+                              },
+                              fontSize: {
+                                xs: "0.84rem",
+                                sm: "0.88rem",
+                              },
+                            }}
+                            onClick={() => setOpen(false)}
+                          >
+                            Нет
+                          </Button>
+                        </motion.div>
+                      </Box>
+                    </Box>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </Modal>
+          </motion.div>
+        </Card>
+      </motion.div>
+    </section>
   );
 }
 

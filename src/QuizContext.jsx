@@ -32,8 +32,9 @@ export const QuizProvider = ({ children }) => {
   }
 
   function resetStatistic() {
-    setCount((prev) => 0);
-    setScore((prev) => 0);
+    setCount(0);
+    setScore(0);
+    setChoiseOption(null);
   }
 
   return (

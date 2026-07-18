@@ -2,29 +2,30 @@ import { Box, Container, Typography } from "@mui/material";
 
 const NotFound = () => {
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className="px-4 sm:px-6">
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          minHeight: "calc(100vh - 64px)",
           textAlign: "center",
-          py: 4,
+          py: {
+            xs: 6,
+            sm: 8,
+          },
         }}
       >
-        {/* 🎨 СТАТИЧНЫЙ РИСУНОК СМАЙЛИКА НА CSS */}
         <Box
           sx={{
             width: { xs: 100, md: 120 },
             height: { xs: 100, md: 120 },
             borderRadius: "50%",
-            backgroundColor: "#FFEB3B", // Классический желтый цвет
-            border: "4px solid #2C3E50", // Четкий контур рисунка
+            backgroundColor: "#FFEB3B",
+            border: "4px solid #2C3E50",
             position: "relative",
             mb: 4,
-            // Левый глаз
             "&::before": {
               content: '""',
               position: "absolute",
@@ -34,10 +35,8 @@ const NotFound = () => {
               height: "12px",
               borderRadius: "50%",
               backgroundColor: "#2C3E50",
-              // Правый глаз (через тень первого глаза)
               boxShadow: "36px 0 0 #2C3E50",
             },
-            // Грустный рот (перевернутая дуга)
             "&::after": {
               content: '""',
               position: "absolute",
@@ -55,7 +54,6 @@ const NotFound = () => {
           }}
         />
 
-        {/* ТЕКСТ ПОД РИСУНКОМ */}
         <Typography
           variant="h4"
           component="h1"
@@ -64,6 +62,11 @@ const NotFound = () => {
             mb: 1,
             color: "#2C3E50",
             letterSpacing: "-0.5px",
+            fontSize: {
+              xs: "1.75rem",
+              sm: "2.125rem",
+            },
+            lineHeight: 1.2,
           }}
         >
           404. Страница не найдена
@@ -72,10 +75,17 @@ const NotFound = () => {
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ mb: 4, maxWidth: "360px", lineHeight: 1.6 }}
+          sx={{
+            mb: 4,
+            maxWidth: "360px",
+            lineHeight: 1.6,
+            fontSize: {
+              xs: "0.95rem",
+              sm: "1rem",
+            },
+          }}
         >
-          Такой страницы нет, потому что Зелимхану плевать на пользователей и на
-          себя. Хорошего дня!
+          Такой страницы нет. Проверьте адрес или вернитесь на главный экран.
         </Typography>
       </Box>
     </Container>
