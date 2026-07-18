@@ -1,11 +1,24 @@
-import { Button, Card, Typography, LinearProgress } from "@mui/material";
+import { useState } from "react";
+import {
+  Button,
+  Card,
+  Typography,
+  LinearProgress,
+  Modal,
+  Box,
+} from "@mui/material";
 import { buttonStyles } from "./utils";
 import { useQuiz } from "./QuizContext";
 import { useParams, useNavigate, useBlocker } from "react-router";
 import { arrStack } from "./data";
+import { Link } from "react-router";
 
 function QuizGame() {
   const { id } = useParams();
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const currentCard = arrStack.find((item) => item.technology === id);
 
@@ -21,6 +34,7 @@ function QuizGame() {
     filteredQuizArray,
     score,
     setScore,
+    resetStatistic,
     quizData,
     nextQuestion,
     handleClick,
@@ -91,15 +105,60 @@ function QuizGame() {
           {choiseOption !== null && explanation}
         </p>
 
-        <Button
-          className={`text-white normal-case mb-4 ${choiseOption !== null && `bg-purple-600`}`}
-          disabled={choiseOption === null ? true : false}
-          onClick={nextQuestion}
-        >
-          {count === quizData.length - 1
-            ? "Подвести итоги"
-            : "Следующий вопрос"}
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            className={`text-white normal-case mb-4 ${choiseOption !== null && `bg-purple-600`}`}
+            disabled={choiseOption === null ? true : false}
+            onClick={nextQuestion}
+          >
+            Далее
+          </Button>
+
+          <Button
+            className="text-white normal-case mb-4 bg-purple-600"
+            onClick={handleOpen}
+          >
+            Завершить игру
+          </Button>
+
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-100 bg-zinc-800 border border-zinc-700/60 rounded-[10px] p-4">
+              <Typography
+                id="modal-modal-title"
+                className="text-center"
+                variant="h6"
+                component="h2"
+                className="text-white text-center"
+              >
+                Вы точно хотите закончить игру?
+              </Typography>
+
+              <Box className="flex justify-center gap-8 mt-8">
+                <Link to="/">
+                  {" "}
+                  <Button
+                    className="bg-purple-600 text-white normal-case"
+                    onClick={resetStatistic}
+                  >
+                    Да
+                  </Button>
+                </Link>
+
+                <Button
+                  className="bg-purple-600 text-white normal-case"
+                  onClick={handleClose}
+                >
+                  Нет
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+        </div>
       </Card>
     </div>
   );

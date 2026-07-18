@@ -31,6 +31,11 @@ export const QuizProvider = ({ children }) => {
     }
   }
 
+  function resetStatistic() {
+    setCount((prev) => 0);
+    setScore((prev) => 0);
+  }
+
   return (
     <QuizContext.Provider
       value={{
@@ -45,6 +50,7 @@ export const QuizProvider = ({ children }) => {
         handleClick,
         progressPercent,
         active,
+        resetStatistic,
         setActive,
       }}
     >

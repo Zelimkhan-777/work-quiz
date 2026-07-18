@@ -12,7 +12,6 @@ export const Router = createBrowserRouter([
     children: [
       { index: true, element: <Content /> },
       { path: "card/:id", element: <QuizGame /> },
-      { path: "**", element: <NotFound /> },
     ],
   },
 ]);
