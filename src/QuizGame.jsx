@@ -107,8 +107,8 @@ function QuizGame() {
       >
         <Card className="flex w-full max-w-4xl flex-col gap-5 rounded-[20px] bg-zinc-700 px-4 py-5 text-white shadow-[0_20px_70px_rgba(0,0,0,0.28)] sm:px-6 sm:py-6 md:px-8">
           <motion.div layout className="flex flex-col gap-4">
-            <Box className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Box className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            <Box className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <Box className="hidden flex-wrap items-center justify-center gap-2 sm:flex sm:justify-start">
                 <Chip
                   label={currentCard.technology}
                   className="border border-purple-400/25 bg-purple-500/10 text-white"
@@ -149,6 +149,35 @@ function QuizGame() {
               >
                 Вопрос {count + 1} из {quizData.length}
               </Typography>
+
+              <Box className="flex flex-wrap items-center justify-center gap-2 sm:hidden">
+                <Chip
+                  label={currentCard.technology}
+                  className="border border-purple-400/25 bg-purple-500/10 text-white"
+                  sx={{
+                    height: 32,
+                    "& .MuiChip-label": {
+                      px: 1.5,
+                      fontWeight: 600,
+                    },
+                  }}
+                />
+
+                <Chip
+                  label={difficulty.label}
+                  className="font-semibold"
+                  sx={{
+                    height: 32,
+                    color: difficulty.color,
+                    backgroundColor: difficulty.background,
+                    border: `1px solid ${difficulty.border}`,
+                    "& .MuiChip-label": {
+                      px: 1.5,
+                      fontWeight: 700,
+                    },
+                  }}
+                />
+              </Box>
             </Box>
 
             <LinearProgress
@@ -156,6 +185,10 @@ function QuizGame() {
               value={progressPercent}
               sx={{
                 width: "100%",
+                mt: {
+                  xs: 0.5,
+                  sm: 0,
+                },
                 maxWidth: {
                   xs: "100%",
                   sm: 520,
