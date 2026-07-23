@@ -85,7 +85,7 @@ function QuizResult({ score, total, technology, onRestart, onBackToThemes }) {
               />
 
               <Typography
-                className="break-words text-zinc-400"
+                className="wrap-break-word text-zinc-400"
                 sx={{
                   fontSize: {
                     xs: "0.85rem",
@@ -176,7 +176,8 @@ function QuizResult({ score, total, technology, onRestart, onBackToThemes }) {
                       borderRadius: 999,
                       background:
                         "linear-gradient(90deg, #818cf8 0%, #a855f7 55%, #ec4899 100%)",
-                      transition: "transform 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                      transition:
+                        "transform 340ms cubic-bezier(0.22, 1, 0.36, 1)",
                     },
                   }}
                 />

@@ -1,14 +1,19 @@
 import { Data } from "../data";
 import { useParams } from "react-router";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export const useQuestions = () => {
   const { id } = useParams();
+  const [currentMode, setCurrentMode] = useState(``);
 
-  const filteredQuizArray = Data.filter((data) => data.category === id);
+  useEffect(() => {
+    console.log(currentMode);
+  });
 
   const quizData = useMemo(() => {
-    const filtered = Data.filter((data) => data.category === id);
+    const filtered = Data.filter(
+      (data) => data.category === id && data.difficulty === currentMode,
+    );
 
     const shuffled = [...filtered];
 
@@ -18,9 +23,11 @@ export const useQuestions = () => {
     }
 
     return shuffled.slice(0, 10);
-  }, [id]);
+  }, [id, currentMode]);
 
   return {
     quizData,
+    currentMode,
+    setCurrentMode,
   };
 };

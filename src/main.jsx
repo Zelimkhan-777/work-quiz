@@ -3,18 +3,16 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { Router } from "./Router";
 
-import {
-  StyledEngineProvider,
-  ThemeProvider,
-  createTheme,
-} from "@mui/material/styles";
+import { StyledEngineProvider } from "@mui/material/styles";
+import GlobalStyles from "@mui/material/GlobalStyles";
 
 // 2. И в самом конце импортируем стили Tailwind!
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <StyledEngineProvider injectFirst>
+    <StyledEngineProvider enableCssLayer>
+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
       <RouterProvider router={Router} />
     </StyledEngineProvider>
   </StrictMode>,

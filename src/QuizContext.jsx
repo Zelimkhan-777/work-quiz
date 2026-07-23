@@ -12,7 +12,7 @@ export const QuizProvider = ({ children }) => {
 
   const [choiseOption, setChoiseOption] = useState(null);
 
-  const { quizData } = useQuestions();
+  const { quizData, setCurrentMode, currentMode } = useQuestions();
 
   const progressPercent = (count / quizData.length) * 100;
 
@@ -53,6 +53,8 @@ export const QuizProvider = ({ children }) => {
         active,
         resetStatistic,
         setActive,
+        setCurrentMode,
+        currentMode,
       }}
     >
       {children}

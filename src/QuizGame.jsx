@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   LinearProgress,
   Modal,
   Typography,
@@ -22,6 +23,27 @@ import { useQuiz } from "./QuizContext";
 import QuizResult from "./QuizResult";
 import { buttonStyles } from "./utils";
 
+const difficultyMeta = {
+  easy: {
+    label: "Легкий",
+    color: "#22c55e",
+    background: "rgba(34, 197, 94, 0.12)",
+    border: "rgba(74, 222, 128, 0.24)",
+  },
+  medium: {
+    label: "Средний",
+    color: "#facc15",
+    background: "rgba(250, 204, 21, 0.12)",
+    border: "rgba(250, 204, 21, 0.24)",
+  },
+  hard: {
+    label: "Тяжелый",
+    color: "#fb7185",
+    background: "rgba(244, 63, 94, 0.14)",
+    border: "rgba(251, 113, 133, 0.28)",
+  },
+};
+
 function QuizGame() {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
@@ -38,6 +60,7 @@ function QuizGame() {
     quizData,
     nextQuestion,
     handleClick,
+    currentMode,
     progressPercent,
   } = useQuiz();
 
@@ -63,6 +86,7 @@ function QuizGame() {
 
   const { question, options, explanation, correctAnswerIndex } =
     quizData[count];
+  const difficulty = difficultyMeta[currentMode] ?? difficultyMeta.easy;
 
   return (
     <section className="flex min-h-full w-full flex-1 items-start justify-center">
@@ -82,20 +106,50 @@ function QuizGame() {
         }}
       >
         <Card className="flex w-full max-w-4xl flex-col gap-5 rounded-[20px] bg-zinc-700 px-4 py-5 text-white shadow-[0_20px_70px_rgba(0,0,0,0.28)] sm:px-6 sm:py-6 md:px-8">
-          <motion.div layout className="flex flex-col gap-2">
-            <Typography
-              className="text-center text-white"
-              sx={{
-                fontSize: {
-                  xs: "1rem",
-                  sm: "1.1rem",
-                  md: "1.2rem",
-                },
-                fontWeight: 600,
-              }}
-            >
-              Вопрос {count + 1}
-            </Typography>
+          <motion.div layout className="flex flex-col gap-4">
+            <Box className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <Box className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                <Chip
+                  label={currentCard.technology}
+                  className="border border-purple-400/25 bg-purple-500/10 text-white"
+                  sx={{
+                    height: 32,
+                    "& .MuiChip-label": {
+                      px: 1.5,
+                      fontWeight: 600,
+                    },
+                  }}
+                />
+
+                <Chip
+                  label={difficulty.label}
+                  className="font-semibold"
+                  sx={{
+                    height: 32,
+                    color: difficulty.color,
+                    backgroundColor: difficulty.background,
+                    border: `1px solid ${difficulty.border}`,
+                    "& .MuiChip-label": {
+                      px: 1.5,
+                      fontWeight: 700,
+                    },
+                  }}
+                />
+              </Box>
+
+              <Typography
+                className="text-center text-zinc-300 sm:text-right"
+                sx={{
+                  fontSize: {
+                    xs: "0.95rem",
+                    sm: "1rem",
+                  },
+                  fontWeight: 600,
+                }}
+              >
+                Вопрос {count + 1} из {quizData.length}
+              </Typography>
+            </Box>
 
             <LinearProgress
               variant="determinate"
