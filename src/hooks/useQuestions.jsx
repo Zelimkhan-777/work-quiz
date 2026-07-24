@@ -6,9 +6,10 @@ export const useQuestions = () => {
   const { id } = useParams();
   const [currentMode, setCurrentMode] = useState(``);
 
-  useEffect(() => {
-    console.log(currentMode);
-  });
+  const questionAmount =
+    (currentMode === "easy" && 10) ||
+    (currentMode === "medium" && 15) ||
+    (currentMode === "hard" && 20);
 
   const quizData = useMemo(() => {
     const filtered = Data.filter(
@@ -22,7 +23,7 @@ export const useQuestions = () => {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    return shuffled.slice(0, 10);
+    return shuffled.slice(0, questionAmount);
   }, [id, currentMode]);
 
   return {
